@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Bridge</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ffe0f0, #d9eaff, #e5d9ff);
+  min-height: 100vh;
+  padding: 25px 15px;
+}
+
+.container {
+  max-width: 450px;
+  margin: 35px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 25px;
+  box-shadow: 0 8px 25px #7773;
+  text-align: center;
+}
+
+h1 {
+  color: #7138c9;
+  font-size: 32px;
+}
+
+.subtitle {
+  color: #777;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #d8c5ff;
+  border-radius: 12px;
+  font-size: 17px;
+  margin: 15px 0;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(90deg, #8b45df, #ed55a2);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 22px;
+  padding: 18px;
+  background: #f5edff;
+  border-radius: 15px;
+  display: none;
+}
+
+.result h2 {
+  color: #7138c9;
+  font-size: 30px;
+}
+
+#status {
+  color: #777;
+  margin-top: 15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🌈 Word Bridge</h1>
+
+  <p class="subtitle">
+    English to Hindi Dictionary
+  </p>
+
+  <input
+    type="text"
+    id="word"
+    placeholder="Enter an English word..."
+  >
+
+  <button onclick="translateWord()">
+    🔍 Translate
+  </button>
+
+  <p id="status"></p>
+
+  <div class="result" id="result">
+    <p>Hindi Meaning</p>
+    <h2 id="meaning"></h2>
+  </div>
+
+</div>
+
+<script>
+
+async function translateWord() {
+
+  const word = document.getElementById("word").value.trim();
+
+  const status = document.getElementById("status");
+  const result = document.getElementById("result");
+
+  if (word === "") {
+    status.innerText = "Please enter a word!";
+    result.style.display = "none";
+    return;
+  }
+
+  status.innerText = "Translating...";
+  result.style.display = "none";
+
+  try {
+
+    const url =
+      "https://api.mymemory.translated.net/get?q=" +
+      encodeURIComponent(word) +
+      "&langpair=en|hi";
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Network error");
+    }
+
+    const data = await response.json();
+
+    if (data.responseStatus !== 200) {
+      throw new Error("Translation unavailable");
+    }
+
+    document.getElementById("meaning").innerText =
+      data.responseData.translatedText;
+
+    result.style.display = "block";
+    status.innerText = "Translation complete! 🎉";
+
+  } catch (error) {
+
+    status.innerText =
+      "Sorry! Translation failed. Try again.";
+
+  }
+}
+
+</script>
+
+</body>
+</html>
